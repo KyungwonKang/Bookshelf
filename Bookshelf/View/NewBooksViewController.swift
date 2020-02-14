@@ -10,10 +10,20 @@ import UIKit
 
 class NewBooksViewController: UIViewController {
 
+    @IBOutlet weak var bookListTableView: UITableView!
+    
+    private var books: [Book] = []
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.bookListTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
+        BookAPIManager.loadNewBookLists { (newBooks) in
+            self.books = newBooks.books
+            DispatchQueue.main.async {
+                self.bookListTableView.reloadData()
+            }
+        }
     }
 
 
@@ -27,4 +37,31 @@ class NewBooksViewController: UIViewController {
     }
     */
 
+}
+
+extension NewBooksViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+}
+
+extension NewBooksViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.books.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
+            return UITableViewCell()
+        }
+        guard self.books.count > indexPath.item else {
+            return cell
+        }
+        
+        let book = self.books[indexPath.item]
+        cell.configure(book: book)
+        return cell
+    }
+    
+    
 }
