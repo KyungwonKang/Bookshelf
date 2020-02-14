@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		45104E4823F65B890081EF48 /* ObjectMapper in Frameworks */ = {isa = PBXBuildFile; productRef = 45104E4723F65B890081EF48 /* ObjectMapper */; };
 		4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4530A89023F654920093D164 /* NewBooksViewController.swift */; };
 		4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4530A89123F654920093D164 /* NewBooksViewController.xib */; };
 		458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458F2D9223F59ED800BA5036 /* AppDelegate.swift */; };
@@ -60,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45104E4823F65B890081EF48 /* ObjectMapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +160,9 @@
 			dependencies = (
 			);
 			name = Bookshelf;
+			packageProductDependencies = (
+				45104E4723F65B890081EF48 /* ObjectMapper */,
+			);
 			productName = Bookshelf;
 			productReference = 458F2D8F23F59ED800BA5036 /* Bookshelf.app */;
 			productType = "com.apple.product-type.application";
@@ -230,6 +235,9 @@
 				Base,
 			);
 			mainGroup = 458F2D8623F59ED800BA5036;
+			packageReferences = (
+				45104E4623F65B890081EF48 /* XCRemoteSwiftPackageReference "ObjectMapper" */,
+			);
 			productRefGroup = 458F2D9023F59ED800BA5036 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -598,6 +606,26 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		45104E4623F65B890081EF48 /* XCRemoteSwiftPackageReference "ObjectMapper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tristanhimmelman/ObjectMapper.git";
+			requirement = {
+				kind = versionRange;
+				maximumVersion = 4.0.0;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		45104E4723F65B890081EF48 /* ObjectMapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45104E4623F65B890081EF48 /* XCRemoteSwiftPackageReference "ObjectMapper" */;
+			productName = ObjectMapper;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 458F2D8723F59ED800BA5036 /* Project object */;
 }
