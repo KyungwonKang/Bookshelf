@@ -22,5 +22,17 @@ class BookAPIManager {
             }
         }
     }
+    
+    static func loadBookInfo(isbn13: String, bookDetailLoaded: @escaping (BookDetail) -> Void) {
+        if let url = URL(string: IT_BOOK_API_URL + "books/\(isbn13)") {
+            URLSessionManager.get(url: url, success: { (json) in
+                if let bookDetail = BookDetail(JSON: json) {
+                    bookDetailLoaded(bookDetail)
+                }
+            }) { (error) in
+                print("Load book detail info error: \(error?.localizedDescription ?? "")")
+            }
+        }
+    }
 
 }
