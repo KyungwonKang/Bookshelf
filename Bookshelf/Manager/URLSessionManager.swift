@@ -31,4 +31,11 @@ class URLSessionManager {
         
         task.resume()
     }
+    
+    static func getImageData(url: URL, completion: @escaping (Data?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
+            completion(data)
+        }
+        task.resume()
+    }
 }
