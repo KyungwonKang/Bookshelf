@@ -15,6 +15,7 @@ enum APIError: Error {
 }
 
 class URLSessionManager {
+    @discardableResult
     static func get(url: URL, completion: @escaping (Result<Data, APIError>) -> Void) -> URLSessionDataTask{
         var request = URLRequest(url: url)
         request.httpMethod = "get"
@@ -32,6 +33,7 @@ class URLSessionManager {
         return task
     }
     
+    @discardableResult
     static func getImageData(url: URL, completion: @escaping (Result<Data, APIError>) -> Void) -> URLSessionDataTask {
         let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
             if let data = data {
