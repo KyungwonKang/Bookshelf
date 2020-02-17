@@ -11,28 +11,46 @@ import Foundation
 let IT_BOOK_API_URL = "https://api.itbook.store/1.0/"
 
 class BookAPIManager {
-    static func loadNewBookLists(newBooksLoaded: @escaping (NewReleasedBooks) -> Void) {
-        if let url = URL(string: IT_BOOK_API_URL + "new") {
-            URLSessionManager.get(url: url, success: { (json) in
-                if let newBooks = NewReleasedBooks(JSON: json) {
+    @discardableResult
+    static func loadNewBookLists(newBooksLoaded: @escaping (NewReleasedBooks) -> Void) -> URLSessionDataTask? {
+        guard let url = URL(string: IT_BOOK_API_URL + "new") else {
+            return nil
+        }
+        
+        let task = URLSessionManager.get(url: url, success: { (data) in
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+                    let newBooks = NewReleasedBooks(JSON: json) {
                     newBooksLoaded(newBooks)
                 }
-            }) { (error) in
-                print("Load new book lists error: \(error?.localizedDescription ?? "")")
+            } catch {
+                print("JSONSerialization error: \(error.localizedDescription)")
             }
+        }) { (error) in
+            print("Load new book lists error: \(error?.localizedDescription ?? "")")
         }
+        return task
     }
     
-    static func loadBookInfo(isbn13: String, bookDetailLoaded: @escaping (BookDetail) -> Void) {
-        if let url = URL(string: IT_BOOK_API_URL + "books/\(isbn13)") {
-            URLSessionManager.get(url: url, success: { (json) in
-                if let bookDetail = BookDetail(JSON: json) {
+    @discardableResult
+    static func loadBookInfo(isbn13: String, bookDetailLoaded: @escaping (BookDetail) -> Void) -> URLSessionDataTask? {
+        guard let url = URL(string: IT_BOOK_API_URL + "books/\(isbn13)") else {
+            return nil
+        }
+        
+        let task = URLSessionManager.get(url: url, success: { (data) in
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+                    let bookDetail = BookDetail(JSON: json) {
                     bookDetailLoaded(bookDetail)
                 }
-            }) { (error) in
-                print("Load book detail info error: \(error?.localizedDescription ?? "")")
+            } catch {
+                print("JSONSerialization error: \(error.localizedDescription)")
             }
+        }) { (error) in
+            print("Load book detail info error: \(error?.localizedDescription ?? "")")
         }
+        return task
     }
-
+    
 }
