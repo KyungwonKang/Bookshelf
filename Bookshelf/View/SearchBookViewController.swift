@@ -15,7 +15,9 @@ class SearchBookViewController: UIViewController {
     
     private var lastPage: Int = 0
     private var books: [Book] = []
-    private var lastTask: URLSessionDataTask?
+    private var loadImageTasks: [Int : URLSessionDataTask] = [:]
+    
+    private var lastSearchTask: URLSessionDataTask?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +26,7 @@ class SearchBookViewController: UIViewController {
         self.definesPresentationContext = true
         
         self.searchController.searchResultsUpdater = self
-//        self.searchController.obscuresBackgroundDuringPresentation = false
+        self.searchController.obscuresBackgroundDuringPresentation = false
         self.searchController.searchBar.placeholder = "Search Books"
         self.searchController.searchBar.delegate = self
         
@@ -53,7 +55,7 @@ extension SearchBookViewController: UISearchBarDelegate {
             let page = self.lastPage + 1
             let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
                 guard let self = self else { return }
-                self.lastTask = nil
+                self.lastSearchTask = nil
                 
                 switch result {
                 case .success(let searchedBooks):
@@ -66,13 +68,13 @@ extension SearchBookViewController: UISearchBarDelegate {
                     print("Search Book error: \(error.localizedDescription)")
                 }
             }
-            self.lastTask = task
+            self.lastSearchTask = task
         }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.lastTask?.cancel()
-        self.lastTask = nil
+        self.lastSearchTask?.cancel()
+        self.lastSearchTask = nil
         
         self.lastPage = 0
         self.books.removeAll()
@@ -101,7 +103,7 @@ extension SearchBookViewController: UITableViewDelegate {
     }
 }
 
-extension SearchBookViewController: UITableViewDataSource {
+extension SearchBookViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.books.count
     }
@@ -115,7 +117,39 @@ extension SearchBookViewController: UITableViewDataSource {
         }
         
         let book = self.books[indexPath.item]
-        cell.configure(book: book)
+        let bookImage = BookCacheManager.shared.images.object(forKey: (book.url ?? "") as NSString)
+        cell.configure(book: book, image: bookImage)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            if self.books.count <= indexPath.item {
+                continue
+            }
+            
+            let book = self.books[indexPath.item]
+            if let imageUrl = book.image {
+                let task = BookCacheManager.shared.getImageFromURL(urlString: imageUrl) { [weak self] (image) in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.loadImageTasks[indexPath.item] = nil
+                        if tableView.indexPathsForVisibleRows?.contains(indexPath) == true {
+                            tableView.reloadRows(at: [indexPath], with: .automatic)
+                        }
+                    }
+                }
+                self.loadImageTasks[indexPath.item] = task
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            if self.loadImageTasks[indexPath.item] != nil {
+                self.loadImageTasks[indexPath.item]?.cancel()
+                self.loadImageTasks[indexPath.item] = nil
+            }
+        }
     }
 }

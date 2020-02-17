@@ -13,6 +13,8 @@ class NewBooksViewController: UIViewController {
     @IBOutlet weak var bookListTableView: UITableView!
     
     private var books: [Book] = []
+    private var loadImageTasks: [Int : URLSessionDataTask] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,7 +57,7 @@ extension NewBooksViewController: UITableViewDelegate {
     }
 }
 
-extension NewBooksViewController: UITableViewDataSource {
+extension NewBooksViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.books.count
     }
@@ -69,9 +71,39 @@ extension NewBooksViewController: UITableViewDataSource {
         }
         
         let book = self.books[indexPath.item]
-        cell.configure(book: book)
+        let bookImage = BookCacheManager.shared.images.object(forKey: (book.url ?? "") as NSString)
+        cell.configure(book: book, image: bookImage)
         return cell
     }
     
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            if self.books.count <= indexPath.item {
+                continue
+            }
+            
+            let book = self.books[indexPath.item]
+            if let imageUrl = book.image {
+                let task = BookCacheManager.shared.getImageFromURL(urlString: imageUrl) { [weak self] (image) in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.loadImageTasks[indexPath.item] = nil
+                        if tableView.indexPathsForVisibleRows?.contains(indexPath) == true {
+                            tableView.reloadRows(at: [indexPath], with: .automatic)
+                        }
+                    }
+                }
+                self.loadImageTasks[indexPath.item] = task
+            }
+        }
+    }
     
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            if self.loadImageTasks[indexPath.item] != nil {
+                self.loadImageTasks[indexPath.item]?.cancel()
+                self.loadImageTasks[indexPath.item] = nil
+            }
+        }
+    }
 }

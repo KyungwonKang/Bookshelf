@@ -22,8 +22,8 @@
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="6l5-PA-TgT"/>
                         <outlet property="delegate" destination="-1" id="J2a-8U-GMZ"/>
+                        <outlet property="prefetchDataSource" destination="-1" id="LR5-AF-T6u"/>
                     </connections>
                 </tableView>
             </subviews>

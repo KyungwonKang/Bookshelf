@@ -16,12 +16,9 @@ class BookInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var isbnLabel: UILabel!
     @IBOutlet weak var urlLabel: UILabel!
     
-    private var lastTask: URLSessionDataTask?
-    
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.lastTask?.cancel()
-        self.lastTask = nil
+        
         self.bookImageView.image = nil
         self.titleLabel.text = nil
         self.subtitleLabel.text = nil
@@ -43,23 +40,12 @@ class BookInfoTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configure(book: Book) {
+    func configure(book: Book, image: UIImage?) {
         self.titleLabel.text = book.title
         self.subtitleLabel.text = book.subtitle
         self.priceLabel.text = book.price
         self.isbnLabel.text = "ISBN13: \(book.isbn13 ?? "")"
         self.urlLabel.text = book.url
-        
-        if let imageurl = book.image, let url = URL(string: imageurl) {
-            let task = URLSessionManager.getImageData(url: url) { [weak self] (data) in
-                guard let self = self else { return }
-                if let imageData = data, let image = UIImage(data: imageData) {
-                    DispatchQueue.main.async {
-                        self.bookImageView.image = image
-                    }
-                }
-            }
-            self.lastTask = task
-        }
+        self.bookImageView.image = image
     }
 }
