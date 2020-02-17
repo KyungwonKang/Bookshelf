@@ -18,8 +18,7 @@ class MainViewController: UITabBarController {
     }
  
     private func setupViewControllers() {
-        let firstVC = NewBooksViewController()
-        firstVC.view.backgroundColor = .green
+        let firstVC = UINavigationController(rootViewController: NewBooksViewController()) 
         firstVC.tabBarItem = UITabBarItem(title: "NEW", image: nil, tag: 0)
         
         let secondVC = UIViewController()
