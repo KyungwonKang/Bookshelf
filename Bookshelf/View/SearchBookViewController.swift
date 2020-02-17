@@ -51,14 +51,19 @@ extension SearchBookViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text, !searchText.isEmpty {
             let page = self.lastPage + 1
-            let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (searchedBooks) in
+            let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
                 guard let self = self else { return }
                 self.lastTask = nil
-                self.lastPage = page
-                self.books.append(contentsOf: searchedBooks.books)
                 
-                DispatchQueue.main.async {
-                    self.bookTableView.reloadData()
+                switch result {
+                case .success(let searchedBooks):
+                    self.lastPage = page
+                    self.books.append(contentsOf: searchedBooks.books)
+                    DispatchQueue.main.async {
+                        self.bookTableView.reloadData()
+                    }
+                case .failure(let error):
+                    print("Search Book error: \(error.localizedDescription)")
                 }
             }
             self.lastTask = task

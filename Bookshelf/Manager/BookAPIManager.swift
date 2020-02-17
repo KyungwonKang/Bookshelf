@@ -12,64 +12,68 @@ let IT_BOOK_API_URL = "https://api.itbook.store/1.0/"
 
 class BookAPIManager {
     @discardableResult
-    static func loadNewBookLists(newBooksLoaded: @escaping (NewReleasedBooks) -> Void) -> URLSessionDataTask? {
+    static func loadNewBookLists(completion: @escaping (Result<NewReleasedBooks, APIError>) -> Void) -> URLSessionDataTask? {
         guard let url = URL(string: IT_BOOK_API_URL + "new") else {
             return nil
         }
         
-        let task = URLSessionManager.get(url: url, success: { (data) in
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+        let task = URLSessionManager.get(url: url) { (result) in
+            switch result {
+            case .success(let data):
+                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
                     let newBooks = NewReleasedBooks(JSON: json) {
-                    newBooksLoaded(newBooks)
+                    completion(Result.success(newBooks))
+                } else {
+                    completion(Result.failure(.decodingJSON))
                 }
-            } catch {
-                print("JSONSerialization error: \(error.localizedDescription)")
+            case .failure(let error):
+                completion(Result.failure(error))
             }
-        }) { (error) in
-            print("Load new book lists error: \(error?.localizedDescription ?? "")")
         }
+        
         return task
     }
     
     @discardableResult
-    static func loadBookInfo(isbn13: String, bookDetailLoaded: @escaping (BookDetail) -> Void) -> URLSessionDataTask? {
+    static func loadBookInfo(isbn13: String, completion: @escaping (Result<BookDetail, APIError>) -> Void) -> URLSessionDataTask? {
         guard let url = URL(string: IT_BOOK_API_URL + "books/\(isbn13)") else {
             return nil
         }
         
-        let task = URLSessionManager.get(url: url, success: { (data) in
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+        let task = URLSessionManager.get(url: url) { (result) in
+            switch result {
+            case .success(let data):
+                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
                     let bookDetail = BookDetail(JSON: json) {
-                    bookDetailLoaded(bookDetail)
+                    completion(Result.success(bookDetail))
+                } else {
+                    completion(Result.failure(.decodingJSON))
                 }
-            } catch {
-                print("JSONSerialization error: \(error.localizedDescription)")
+            case .failure(let error):
+                completion(Result.failure(error))
             }
-        }) { (error) in
-            print("Load book detail info error: \(error?.localizedDescription ?? "")")
         }
         return task
     }
     
     @discardableResult
-    static func searchBooks(searchText: String, page: Int = 1, searched: @escaping (SearchedBooks) -> Void) -> URLSessionDataTask? {
+    static func searchBooks(searchText: String, page: Int = 1, completion: @escaping (Result<SearchedBooks, APIError>) -> Void) -> URLSessionDataTask? {
         guard let url = URL(string: IT_BOOK_API_URL + "search/\(searchText)/\(page)") else {
             return nil
         }
         
-        let task = URLSessionManager.get(url: url, success: { (data) in
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+        let task = URLSessionManager.get(url: url) { (result) in
+            switch result {
+            case .success(let data):
+                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
                     let searchedBooks = SearchedBooks(JSON: json) {
-                    searched(searchedBooks)
+                    completion(Result.success(searchedBooks))
+                } else {
+                    completion(Result.failure(.decodingJSON))
                 }
-            } catch {
-                print("JSONSerialization error: \(error.localizedDescription)")
+            case .failure(let error):
+                completion(Result.failure(error))
             }
-        }) { (error) in
-            print("Search books error: \(error?.localizedDescription ?? "")")
         }
         return task
     }

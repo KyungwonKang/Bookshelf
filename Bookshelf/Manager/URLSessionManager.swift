@@ -8,25 +8,39 @@
 
 import Foundation
 
+enum APIError: Error {
+    case noData
+    case decodingJSON
+    case requestFail(error: Error)
+}
+
 class URLSessionManager {
-    static func get(url: URL, success: @escaping (Data) -> Void, fail: @escaping (Error?) -> Void) -> URLSessionDataTask{
+    static func get(url: URL, completion: @escaping (Result<Data, APIError>) -> Void) -> URLSessionDataTask{
         var request = URLRequest(url: url)
         request.httpMethod = "get"
         
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let data = data {
-                success(data)
+                completion(Result.success(data))
+            } else if let error = error {
+                completion(Result.failure(.requestFail(error: error)))
             } else {
-                fail(error)
+                completion(Result.failure(.noData))
             }
         }
         task.resume()
         return task
     }
     
-    static func getImageData(url: URL, completion: @escaping (Data?) -> Void) -> URLSessionDataTask {
+    static func getImageData(url: URL, completion: @escaping (Result<Data, APIError>) -> Void) -> URLSessionDataTask {
         let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
-            completion(data)
+            if let data = data {
+                completion(Result.success(data))
+            } else if let error = error {
+                completion(Result.failure(.requestFail(error: error)))
+            } else {
+                completion(Result.failure(.noData))
+            }
         }
         task.resume()
         return task

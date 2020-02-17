@@ -18,10 +18,13 @@ class NewBooksViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         self.bookListTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
-        BookAPIManager.loadNewBookLists { (newBooks) in
-            self.books = newBooks.books
-            DispatchQueue.main.async {
-                self.bookListTableView.reloadData()
+        BookAPIManager.loadNewBookLists { [weak self] (result) in
+            guard let self = self else { return }
+            switch result {
+            case .success(let newBooks):
+                self.books = newBooks.books
+            case .failure(let error):
+                print("Load new book lists error: \(error.localizedDescription)")
             }
         }
     }

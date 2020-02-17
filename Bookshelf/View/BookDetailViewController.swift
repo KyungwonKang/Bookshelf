@@ -47,13 +47,19 @@ class BookDetailViewController: UIViewController {
         self.titleLabel.text = book.title
         self.subtitleLabel.text = book.subtitle
         if let imageurl = book.image, let url = URL(string: imageurl) {
-            let task = URLSessionManager.getImageData(url: url) { [weak self] (data) in
+            let task = URLSessionManager.getImageData(url: url) { [weak self] (result) in
                 guard let self = self else { return }
                 self.lastTask = nil
-                if let imageData = data, let image = UIImage(data: imageData) {
-                    DispatchQueue.main.async {
-                        self.bookImageView.image = image
+                
+                switch result {
+                case .success(let data):
+                    if let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            self.bookImageView.image = image
+                        }
                     }
+                case .failure(let error):
+                    print("Get image data error: \(error.localizedDescription)")
                 }
             }
             self.lastTask = task
@@ -62,25 +68,38 @@ class BookDetailViewController: UIViewController {
     
     private func loadBookDetailInfo(book: Book) {
         guard let isbn13 = book.isbn13 else { return }
-        let task = BookAPIManager.loadBookInfo(isbn13: isbn13) { [weak self] (detail) in
+        let task = BookAPIManager.loadBookInfo(isbn13: isbn13, completion: { [weak self] (result) in
             guard let self = self else { return }
             self.lastTask = nil
-            DispatchQueue.main.async {
-                self.updateUI(bookDetail: detail)
+            
+            switch result {
+            case .success(let detail):
+                DispatchQueue.main.async {
+                    self.updateUI(bookDetail: detail)
+                }
+            case .failure(let error):
+                print("Load book detail error: \(error.localizedDescription)")
             }
-        }
+        })
+        
         self.lastTask = task
     }
     
     private func updateUI(bookDetail: BookDetail) {
         if let imageurl = bookDetail.image, let url = URL(string: imageurl) {
-            let task = URLSessionManager.getImageData(url: url) { [weak self] (data) in
+            let task = URLSessionManager.getImageData(url: url) { [weak self] (result) in
                 guard let self = self else { return }
                 self.lastTask = nil
-                if let imageData = data, let image = UIImage(data: imageData) {
-                    DispatchQueue.main.async {
-                        self.bookImageView.image = image
+                
+                switch result {
+                case .success(let data):
+                    if let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            self.bookImageView.image = image
+                        }
                     }
+                case .failure(let error):
+                    print("Get image data error: \(error.localizedDescription)")
                 }
             }
             self.lastTask = task
