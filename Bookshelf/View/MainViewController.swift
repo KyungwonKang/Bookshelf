@@ -18,11 +18,10 @@ class MainViewController: UITabBarController {
     }
  
     private func setupViewControllers() {
-        let firstVC = UINavigationController(rootViewController: NewBooksViewController()) 
+        let firstVC = UINavigationController(rootViewController: NewBooksViewController())
         firstVC.tabBarItem = UITabBarItem(title: "NEW", image: nil, tag: 0)
         
-        let secondVC = UIViewController()
-        secondVC.view.backgroundColor = .brown
+        let secondVC = UINavigationController(rootViewController: SearchBookViewController())
         secondVC.tabBarItem = UITabBarItem(title: "SEARCH", image: nil, tag: 1)
         
         self.setViewControllers([firstVC, secondVC], animated: false)
