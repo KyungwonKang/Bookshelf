@@ -53,4 +53,24 @@ class BookAPIManager {
         return task
     }
     
+    @discardableResult
+    static func searchBooks(searchText: String, page: Int = 1, searched: @escaping (SearchedBooks) -> Void) -> URLSessionDataTask? {
+        guard let url = URL(string: IT_BOOK_API_URL + "search/\(searchText)/\(page)") else {
+            return nil
+        }
+        
+        let task = URLSessionManager.get(url: url, success: { (data) in
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String:Any],
+                    let searchedBooks = SearchedBooks(JSON: json) {
+                    searched(searchedBooks)
+                }
+            } catch {
+                print("JSONSerialization error: \(error.localizedDescription)")
+            }
+        }) { (error) in
+            print("Search books error: \(error?.localizedDescription ?? "")")
+        }
+        return task
+    }
 }
