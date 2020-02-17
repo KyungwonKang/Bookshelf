@@ -16,8 +16,12 @@ class BookInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var isbnLabel: UILabel!
     @IBOutlet weak var urlLabel: UILabel!
     
+    private var lastTask: URLSessionDataTask?
+    
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.lastTask?.cancel()
+        self.lastTask = nil
         self.bookImageView.image = nil
         self.titleLabel.text = nil
         self.subtitleLabel.text = nil
@@ -29,6 +33,7 @@ class BookInfoTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        self.selectionStyle = .none
         self.bookImageView.contentMode = .scaleAspectFit
     }
 
@@ -46,7 +51,7 @@ class BookInfoTableViewCell: UITableViewCell {
         self.urlLabel.text = book.url
         
         if let imageurl = book.image, let url = URL(string: imageurl) {
-            URLSessionManager.getImageData(url: url) { [weak self] (data) in
+            let task = URLSessionManager.getImageData(url: url) { [weak self] (data) in
                 guard let self = self else { return }
                 if let imageData = data, let image = UIImage(data: imageData) {
                     DispatchQueue.main.async {
@@ -54,6 +59,7 @@ class BookInfoTableViewCell: UITableViewCell {
                     }
                 }
             }
+            self.lastTask = task
         }
     }
 }
