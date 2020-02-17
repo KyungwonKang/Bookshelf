@@ -15,6 +15,8 @@
 		45104E4F23F6673C0081EF48 /* BookInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E4D23F6673C0081EF48 /* BookInfoTableViewCell.swift */; };
 		45104E5023F6673C0081EF48 /* BookInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104E4E23F6673C0081EF48 /* BookInfoTableViewCell.xib */; };
 		45104E5223F6A08C0081EF48 /* BookDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E5123F6A08C0081EF48 /* BookDetailModel.swift */; };
+		45104E5523F6A62D0081EF48 /* BookDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E5323F6A62D0081EF48 /* BookDetailViewController.swift */; };
+		45104E5623F6A62D0081EF48 /* BookDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104E5423F6A62D0081EF48 /* BookDetailViewController.xib */; };
 		4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4530A89023F654920093D164 /* NewBooksViewController.swift */; };
 		4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4530A89123F654920093D164 /* NewBooksViewController.xib */; };
 		458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458F2D9223F59ED800BA5036 /* AppDelegate.swift */; };
@@ -52,6 +54,8 @@
 		45104E4D23F6673C0081EF48 /* BookInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookInfoTableViewCell.swift; sourceTree = "<group>"; };
 		45104E4E23F6673C0081EF48 /* BookInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BookInfoTableViewCell.xib; sourceTree = "<group>"; };
 		45104E5123F6A08C0081EF48 /* BookDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailModel.swift; sourceTree = "<group>"; };
+		45104E5323F6A62D0081EF48 /* BookDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailViewController.swift; sourceTree = "<group>"; };
+		45104E5423F6A62D0081EF48 /* BookDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BookDetailViewController.xib; sourceTree = "<group>"; };
 		4530A89023F654920093D164 /* NewBooksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBooksViewController.swift; sourceTree = "<group>"; };
 		4530A89123F654920093D164 /* NewBooksViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewBooksViewController.xib; sourceTree = "<group>"; };
 		458F2D8F23F59ED800BA5036 /* Bookshelf.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bookshelf.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,6 +128,8 @@
 				4530A89123F654920093D164 /* NewBooksViewController.xib */,
 				45104E4D23F6673C0081EF48 /* BookInfoTableViewCell.swift */,
 				45104E4E23F6673C0081EF48 /* BookInfoTableViewCell.xib */,
+				45104E5323F6A62D0081EF48 /* BookDetailViewController.swift */,
+				45104E5423F6A62D0081EF48 /* BookDetailViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -293,6 +299,7 @@
 			files = (
 				458F2D9F23F59EDA00BA5036 /* LaunchScreen.storyboard in Resources */,
 				458F2DC323F6330900BA5036 /* MainViewController.xib in Resources */,
+				45104E5623F6A62D0081EF48 /* BookDetailViewController.xib in Resources */,
 				4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */,
 				458F2D9C23F59EDA00BA5036 /* Assets.xcassets in Resources */,
 				45104E5023F6673C0081EF48 /* BookInfoTableViewCell.xib in Resources */,
@@ -324,6 +331,7 @@
 				458F2D9723F59ED800BA5036 /* MainViewController.swift in Sources */,
 				458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */,
 				4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */,
+				45104E5523F6A62D0081EF48 /* BookDetailViewController.swift in Sources */,
 				45104E4A23F65E220081EF48 /* NewReleasedBooks.swift in Sources */,
 				458F2D9523F59ED800BA5036 /* SceneDelegate.swift in Sources */,
 				45104E4223F6575F0081EF48 /* URLSessionManager.swift in Sources */,

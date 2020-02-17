@@ -41,7 +41,14 @@ class NewBooksViewController: UIViewController {
 
 extension NewBooksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        guard self.books.count > indexPath.item else { return }
+        let book = self.books[indexPath.item]
+        let detailVC = BookDetailViewController(book: book)
+        self.navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }
 
