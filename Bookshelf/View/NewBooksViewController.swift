@@ -48,12 +48,12 @@ class NewBooksViewController: UIViewController {
     private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
         guard BookCacheManager.shared.images.object(forKey: imageURL as NSString) == nil else { return }
         guard self.loadImageTasks[indexPath.item] == nil else { return }
-        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self] (image) in
+        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self, indexPath] (image) in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.loadImageTasks[indexPath.item] = nil
-                if self.bookListTableView.indexPathsForVisibleRows?.contains(indexPath) == true {
-                    self.bookListTableView.reloadRows(at: [indexPath], with: .automatic)
+                if let cell = self.bookListTableView.cellForRow(at: indexPath) as? BookInfoTableViewCell {
+                    cell.configure(image: image)
                 }
             }
         }
@@ -109,15 +109,6 @@ extension NewBooksViewController: UITableViewDataSourcePrefetching {
             let book = self.books[indexPath.item]
             if let imageURL = book.image {
                 self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        for indexPath in indexPaths {
-            if self.loadImageTasks[indexPath.item] != nil {
-                self.loadImageTasks[indexPath.item]?.cancel()
-                self.loadImageTasks[indexPath.item] = nil
             }
         }
     }

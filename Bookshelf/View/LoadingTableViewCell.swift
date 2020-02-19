@@ -11,6 +11,11 @@ import UIKit
 class LoadingTableViewCell: UITableViewCell {
     @IBOutlet weak var indicatorView: UIActivityIndicatorView!
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.indicatorView.stopAnimating()
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

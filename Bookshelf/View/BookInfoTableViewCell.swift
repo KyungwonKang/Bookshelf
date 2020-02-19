@@ -51,4 +51,8 @@ class BookInfoTableViewCell: UITableViewCell {
         self.urlLabel.text = book.url
         self.bookImageView.image = image
     }
+    
+    func configure(image: UIImage?) {
+        self.bookImageView.image = image
+    }
 }

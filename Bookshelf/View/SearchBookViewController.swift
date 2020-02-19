@@ -18,6 +18,8 @@ class SearchBookViewController: UIViewController {
     private var loadImageTasks: [Int : URLSessionDataTask] = [:]
     
     private var lastSearchTask: URLSessionDataTask?
+    private var lastSearchText: String?
+    private var loadingEnded: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +36,7 @@ class SearchBookViewController: UIViewController {
         self.navigationItem.title = "Books"
         
         self.bookTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
+        self.bookTableView.register(UINib(nibName: "LoadingTableViewCell", bundle: nil), forCellReuseIdentifier: "LoadingTableViewCell")
     }
 
 
@@ -51,10 +54,17 @@ class SearchBookViewController: UIViewController {
 
 extension SearchBookViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.loadingEnded = false
         if let searchText = searchBar.text, !searchText.isEmpty {
-            let page = 1    //self.lastPage + 1
+            let page = 1
+            self.lastSearchText = searchText
             self.lastSearchTask?.cancel()
             self.lastSearchTask = nil
+            self.loadImageTasks.values.forEach { (task) in
+                task.cancel()
+            }
+            self.loadImageTasks.removeAll()
+            
             let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
                 guard let self = self else { return }
                 self.lastSearchTask = nil
@@ -80,21 +90,24 @@ extension SearchBookViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.lastSearchTask?.cancel()
         self.lastSearchTask = nil
-        
+        self.loadImageTasks.values.forEach { (task) in
+            task.cancel()
+        }
+        self.loadImageTasks.removeAll()
         self.lastPage = 0
+        self.lastSearchText = nil
         self.books.removeAll()
-        self.bookTableView.reloadData()
     }
     
     private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
         guard BookCacheManager.shared.images.object(forKey: imageURL as NSString) == nil else { return }
         guard self.loadImageTasks[indexPath.item] == nil else { return }
-        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self] (image) in
+        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self, indexPath] (image) in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.loadImageTasks[indexPath.item] = nil
-                if self.bookTableView.indexPathsForVisibleRows?.contains(indexPath) == true {
-                    self.bookTableView.reloadRows(at: [indexPath], with: .automatic)
+                if let cell = self.bookTableView.cellForRow(at: indexPath) as? BookInfoTableViewCell {
+                    cell.configure(image: image)
                 }
             }
         }
@@ -121,29 +134,87 @@ extension SearchBookViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let loadingCell = cell as? LoadingTableViewCell else {
+            return
+        }
+        
+        guard self.loadingEnded == false, self.lastSearchTask == nil else {
+            return
+        }
+        
+        loadingCell.startAnimating()
+        if let searchText = self.lastSearchText {
+            let page = self.lastPage + 1
+            print("*** SEARCH BOOK \(searchText), \(page)")
+            let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
+                guard let self = self else { return }
+                self.lastSearchTask = nil
+                
+                switch result {
+                case .success(let searchedBooks):
+                    print("***=== SEARCHED \(searchedBooks.books.count), \(page)")
+                    if searchedBooks.books.count > 0 {
+                        if page == 1 {
+                            self.books.removeAll()
+                        }
+                        self.lastPage = page
+                        self.books.append(contentsOf: searchedBooks.books)
+                        DispatchQueue.main.async {
+                            self.bookTableView.reloadData()
+                        }
+                    } else {
+                        self.loadingEnded = true
+                        DispatchQueue.main.async {
+                            self.bookTableView.reloadData()
+                        }
+                    }
+                    
+                case .failure(let error):
+                    print("Search Book error: \(error.localizedDescription)")
+                }
+            }
+            self.lastSearchTask = task
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let loadingCell = cell as? LoadingTableViewCell {
+            loadingCell.stopAnimating()
+        }
+    }
 }
 
 extension SearchBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.books.count
+        if self.loadingEnded {
+            return self.books.count
+        } else {
+            return (self.books.count == 0) ? 0 : (self.books.count + 1)
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
-            return UITableViewCell()
-        }
-        guard self.books.count > indexPath.item else {
+        if self.books.count > indexPath.item {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
+                return UITableViewCell()
+            }
+            
+            let book = self.books[indexPath.item]
+            let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
+            if bookImage == nil, let imageURL = book.image {
+                self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
+            }
+            
+            cell.configure(book: book, image: bookImage)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "LoadingTableViewCell", for: indexPath) as? LoadingTableViewCell else {
+                return UITableViewCell()
+            }
             return cell
         }
-        
-        let book = self.books[indexPath.item]
-        let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
-        if bookImage == nil, let imageURL = book.image {
-            self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
-        }
-        
-        cell.configure(book: book, image: bookImage)
-        return cell
     }
 }
 
@@ -157,15 +228,6 @@ extension SearchBookViewController: UITableViewDataSourcePrefetching {
             let book = self.books[indexPath.item]
             if let imageURL = book.image {
                 self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        for indexPath in indexPaths {
-            if self.loadImageTasks[indexPath.item] != nil {
-                self.loadImageTasks[indexPath.item]?.cancel()
-                self.loadImageTasks[indexPath.item] = nil
             }
         }
     }
