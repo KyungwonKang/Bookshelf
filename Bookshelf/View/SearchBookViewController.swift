@@ -147,14 +147,12 @@ extension SearchBookViewController: UITableViewDelegate {
         loadingCell.startAnimating()
         if let searchText = self.lastSearchText {
             let page = self.lastPage + 1
-            print("*** SEARCH BOOK \(searchText), \(page)")
             let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
                 guard let self = self else { return }
                 self.lastSearchTask = nil
                 
                 switch result {
                 case .success(let searchedBooks):
-                    print("***=== SEARCHED \(searchedBooks.books.count), \(page)")
                     if searchedBooks.books.count > 0 {
                         if page == 1 {
                             self.books.removeAll()
