@@ -52,13 +52,18 @@ class SearchBookViewController: UIViewController {
 extension SearchBookViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text, !searchText.isEmpty {
-            let page = self.lastPage + 1
+            let page = 1    //self.lastPage + 1
+            self.lastSearchTask?.cancel()
+            self.lastSearchTask = nil
             let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
                 guard let self = self else { return }
                 self.lastSearchTask = nil
                 
                 switch result {
                 case .success(let searchedBooks):
+                    if page == 1 {
+                        self.books.removeAll()
+                    }
                     self.lastPage = page
                     self.books.append(contentsOf: searchedBooks.books)
                     DispatchQueue.main.async {
@@ -79,6 +84,21 @@ extension SearchBookViewController: UISearchBarDelegate {
         self.lastPage = 0
         self.books.removeAll()
         self.bookTableView.reloadData()
+    }
+    
+    private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
+        guard BookCacheManager.shared.images.object(forKey: imageURL as NSString) == nil else { return }
+        guard self.loadImageTasks[indexPath.item] == nil else { return }
+        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self] (image) in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.loadImageTasks[indexPath.item] = nil
+                if self.bookTableView.indexPathsForVisibleRows?.contains(indexPath) == true {
+                    self.bookTableView.reloadRows(at: [indexPath], with: .automatic)
+                }
+            }
+        }
+        self.loadImageTasks[indexPath.item] = task
     }
 }
 
@@ -103,7 +123,7 @@ extension SearchBookViewController: UITableViewDelegate {
     }
 }
 
-extension SearchBookViewController: UITableViewDataSourcePrefetching {
+extension SearchBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.books.count
     }
@@ -117,11 +137,17 @@ extension SearchBookViewController: UITableViewDataSourcePrefetching {
         }
         
         let book = self.books[indexPath.item]
-        let bookImage = BookCacheManager.shared.images.object(forKey: (book.url ?? "") as NSString)
+        let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
+        if bookImage == nil, let imageURL = book.image {
+            self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
+        }
+        
         cell.configure(book: book, image: bookImage)
         return cell
     }
-    
+}
+
+extension SearchBookViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
             if self.books.count <= indexPath.item {
@@ -129,17 +155,8 @@ extension SearchBookViewController: UITableViewDataSourcePrefetching {
             }
             
             let book = self.books[indexPath.item]
-            if let imageUrl = book.image {
-                let task = BookCacheManager.shared.getImageFromURL(urlString: imageUrl) { [weak self] (image) in
-                    guard let self = self else { return }
-                    DispatchQueue.main.async {
-                        self.loadImageTasks[indexPath.item] = nil
-                        if tableView.indexPathsForVisibleRows?.contains(indexPath) == true {
-                            tableView.reloadRows(at: [indexPath], with: .automatic)
-                        }
-                    }
-                }
-                self.loadImageTasks[indexPath.item] = task
+            if let imageURL = book.image {
+                self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
             }
         }
     }

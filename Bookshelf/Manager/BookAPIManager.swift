@@ -58,7 +58,8 @@ class BookAPIManager {
     
     @discardableResult
     static func searchBooks(searchText: String, page: Int = 1, completion: @escaping (Result<SearchedBooks, APIError>) -> Void) -> URLSessionDataTask? {
-        guard let url = URL(string: IT_BOOK_API_URL + "search/\(searchText)/\(page)") else {
+        guard let urlString = (IT_BOOK_API_URL + "search/\(searchText)/\(page)").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+            let url = URL(string: urlString) else {
             return nil
         }
         
