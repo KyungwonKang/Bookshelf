@@ -21,6 +21,8 @@
 		45104E9923FA1E200081EF48 /* SearchBookViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104E9723FA1E200081EF48 /* SearchBookViewController.xib */; };
 		45104E9B23FA4BE10081EF48 /* SearchedBooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E9A23FA4BE10081EF48 /* SearchedBooks.swift */; };
 		45104E9D23FA93A80081EF48 /* BookCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E9C23FA93A80081EF48 /* BookCacheManager.swift */; };
+		45104EA223FD08390081EF48 /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */; };
+		45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */; };
 		4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4530A89023F654920093D164 /* NewBooksViewController.swift */; };
 		4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4530A89123F654920093D164 /* NewBooksViewController.xib */; };
 		458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458F2D9223F59ED800BA5036 /* AppDelegate.swift */; };
@@ -64,6 +66,8 @@
 		45104E9723FA1E200081EF48 /* SearchBookViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchBookViewController.xib; sourceTree = "<group>"; };
 		45104E9A23FA4BE10081EF48 /* SearchedBooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedBooks.swift; sourceTree = "<group>"; };
 		45104E9C23FA93A80081EF48 /* BookCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCacheManager.swift; sourceTree = "<group>"; };
+		45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
+		45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingTableViewCell.xib; sourceTree = "<group>"; };
 		4530A89023F654920093D164 /* NewBooksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBooksViewController.swift; sourceTree = "<group>"; };
 		4530A89123F654920093D164 /* NewBooksViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewBooksViewController.xib; sourceTree = "<group>"; };
 		458F2D8F23F59ED800BA5036 /* Bookshelf.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bookshelf.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +146,8 @@
 				45104E5423F6A62D0081EF48 /* BookDetailViewController.xib */,
 				45104E9623FA1E200081EF48 /* SearchBookViewController.swift */,
 				45104E9723FA1E200081EF48 /* SearchBookViewController.xib */,
+				45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */,
+				45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -311,6 +317,7 @@
 			files = (
 				458F2D9F23F59EDA00BA5036 /* LaunchScreen.storyboard in Resources */,
 				458F2DC323F6330900BA5036 /* MainViewController.xib in Resources */,
+				45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */,
 				45104E5623F6A62D0081EF48 /* BookDetailViewController.xib in Resources */,
 				4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */,
 				458F2D9C23F59EDA00BA5036 /* Assets.xcassets in Resources */,
@@ -345,6 +352,7 @@
 				458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */,
 				4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */,
 				45104E5523F6A62D0081EF48 /* BookDetailViewController.swift in Sources */,
+				45104EA223FD08390081EF48 /* LoadingTableViewCell.swift in Sources */,
 				45104E9823FA1E200081EF48 /* SearchBookViewController.swift in Sources */,
 				45104E4A23F65E220081EF48 /* NewReleasedBooks.swift in Sources */,
 				45104E9D23FA93A80081EF48 /* BookCacheManager.swift in Sources */,
