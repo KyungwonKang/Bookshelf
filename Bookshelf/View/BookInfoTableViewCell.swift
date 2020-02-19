@@ -32,6 +32,9 @@ class BookInfoTableViewCell: UITableViewCell {
         // Initialization code
         self.selectionStyle = .none
         self.bookImageView.contentMode = .scaleAspectFit
+        self.bookImageView.layer.shadowColor = UIColor.lightGray.cgColor
+        self.bookImageView.layer.shadowOpacity = 1.0
+        self.bookImageView.layer.shadowOffset = CGSize(width: 3, height: 3)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
