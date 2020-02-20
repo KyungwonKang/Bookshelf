@@ -7,9 +7,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SearchBookViewController" customModule="Bookshelf" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SearchResultViewController" customModule="Bookshelf" customModuleProvider="target">
             <connections>
-                <outlet property="bookTableView" destination="edU-4E-D7O" id="e01-oR-xed"/>
+                <outlet property="bookTableView" destination="urx-Fq-AkL" id="GMd-6N-MNd"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -18,24 +18,25 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="edU-4E-D7O">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" bouncesZoom="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="urx-Fq-AkL">
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="1TW-1A-PQF"/>
-                        <outlet property="delegate" destination="-1" id="J2a-8U-GMZ"/>
-                        <outlet property="prefetchDataSource" destination="-1" id="LR5-AF-T6u"/>
+                        <outlet property="dataSource" destination="-1" id="wHH-pv-e8D"/>
+                        <outlet property="delegate" destination="-1" id="Uhp-Hs-qSy"/>
+                        <outlet property="prefetchDataSource" destination="-1" id="Wgk-q0-yMl"/>
                     </connections>
                 </tableView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="edU-4E-D7O" secondAttribute="trailing" id="GHd-EI-NZO"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="edU-4E-D7O" secondAttribute="bottom" id="MYt-BX-3YW"/>
-                <constraint firstItem="edU-4E-D7O" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="r2U-oD-O5o"/>
-                <constraint firstItem="edU-4E-D7O" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="sS7-na-jsb"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="urx-Fq-AkL" secondAttribute="trailing" id="Uwt-wd-fSA"/>
+                <constraint firstItem="urx-Fq-AkL" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="bFa-fw-HRC"/>
+                <constraint firstItem="urx-Fq-AkL" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="g3O-Sz-ASl"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="urx-Fq-AkL" secondAttribute="bottom" id="szB-Q7-aMA"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <point key="canvasLocation" x="132" y="78"/>
+            <point key="canvasLocation" x="-210" y="91"/>
         </view>
     </objects>
 </document>

@@ -17,19 +17,30 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ggp-sg-1vY">
-                        <rect key="frame" x="25" y="12.5" width="39.5" height="19.5"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <rect key="frame" x="25" y="12" width="42" height="20.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" systemColor="systemPinkColor" red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JNI-Vf-LNj">
+                        <rect key="frame" x="15" y="0.0" width="305" height="1"/>
+                        <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="NAe-mB-A54"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Ggp-sg-1vY" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="4e1-KI-M4W"/>
+                    <constraint firstAttribute="trailing" secondItem="JNI-Vf-LNj" secondAttribute="trailing" id="XU3-44-rDd"/>
+                    <constraint firstItem="JNI-Vf-LNj" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="enW-KH-yUp"/>
                     <constraint firstItem="Ggp-sg-1vY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="fxq-48-3qG"/>
+                    <constraint firstItem="JNI-Vf-LNj" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="gfw-3H-9xo"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="seperatorHeightConstraint" destination="NAe-mB-A54" id="4bb-47-Lgj"/>
                 <outlet property="titleLabel" destination="Ggp-sg-1vY" id="suA-Nw-Yo4"/>
             </connections>
             <point key="canvasLocation" x="-203" y="56"/>

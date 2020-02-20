@@ -9,7 +9,7 @@
 import Foundation
 
 class SearchLogManager {
-    private(set) var searched: [String] = []
+    private var searched: [String] = []
     private let maxSaveCount = 5
     
     init() {
@@ -31,5 +31,9 @@ class SearchLogManager {
     func removeAll() {
         self.searched.removeAll()
         RECENTLY_SEARCHED_TEXTS.save(array: nil)
+    }
+    
+    func getSearchedTexts() -> [String] {
+        return self.searched.reversed()
     }
 }

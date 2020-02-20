@@ -1,5 +1,5 @@
 //
-//  BasicTableViewCell.swift
+//  RecentHeaderTableViewCell.swift
 //  Bookshelf
 //
 //  Created by Kyungwon Kang on 2020/02/20.
@@ -8,16 +8,22 @@
 
 import UIKit
 
-class BasicTableViewCell: UITableViewCell {
+protocol RecentClearDelegate: NSObjectProtocol {
+    func clearButtonClicked()
+}
 
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var seperatorHeightConstraint: NSLayoutConstraint!
+class RecentHeaderTableViewCell: UITableViewCell {
+
+    weak var delegate: RecentClearDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.selectionStyle = .none
-        self.seperatorHeightConstraint.constant = 1.0 / UIScreen.main.scale
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.delegate = nil
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -26,7 +32,7 @@ class BasicTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configure(title: String) {
-        self.titleLabel.text = title
+    @IBAction func clearButtonClicked(_ sender: UIButton) {
+        self.delegate?.clearButtonClicked()
     }
 }
