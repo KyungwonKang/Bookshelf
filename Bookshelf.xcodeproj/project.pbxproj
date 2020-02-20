@@ -23,6 +23,10 @@
 		45104E9D23FA93A80081EF48 /* BookCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E9C23FA93A80081EF48 /* BookCacheManager.swift */; };
 		45104EA223FD08390081EF48 /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */; };
 		45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */; };
+		45104EA823FE5A490081EF48 /* SearchLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA723FE5A490081EF48 /* SearchLogManager.swift */; };
+		45104EAA23FE5B1B0081EF48 /* UserDefaults+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */; };
+		45104EAD23FE5ECA0081EF48 /* BasicTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EAB23FE5ECA0081EF48 /* BasicTableViewCell.swift */; };
+		45104EAE23FE5ECA0081EF48 /* BasicTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EAC23FE5ECA0081EF48 /* BasicTableViewCell.xib */; };
 		4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4530A89023F654920093D164 /* NewBooksViewController.swift */; };
 		4530A89323F654920093D164 /* NewBooksViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4530A89123F654920093D164 /* NewBooksViewController.xib */; };
 		458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458F2D9223F59ED800BA5036 /* AppDelegate.swift */; };
@@ -68,6 +72,10 @@
 		45104E9C23FA93A80081EF48 /* BookCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCacheManager.swift; sourceTree = "<group>"; };
 		45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
 		45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingTableViewCell.xib; sourceTree = "<group>"; };
+		45104EA723FE5A490081EF48 /* SearchLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLogManager.swift; sourceTree = "<group>"; };
+		45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+.swift"; sourceTree = "<group>"; };
+		45104EAB23FE5ECA0081EF48 /* BasicTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicTableViewCell.swift; sourceTree = "<group>"; };
+		45104EAC23FE5ECA0081EF48 /* BasicTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BasicTableViewCell.xib; sourceTree = "<group>"; };
 		4530A89023F654920093D164 /* NewBooksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBooksViewController.swift; sourceTree = "<group>"; };
 		4530A89123F654920093D164 /* NewBooksViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewBooksViewController.xib; sourceTree = "<group>"; };
 		458F2D8F23F59ED800BA5036 /* Bookshelf.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bookshelf.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +126,7 @@
 				45104E4123F6575F0081EF48 /* URLSessionManager.swift */,
 				45104E4B23F665120081EF48 /* BookAPIManager.swift */,
 				45104E9C23FA93A80081EF48 /* BookCacheManager.swift */,
+				45104EA723FE5A490081EF48 /* SearchLogManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -131,6 +140,14 @@
 				45104E9A23FA4BE10081EF48 /* SearchedBooks.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		45104EA623FE59D10081EF48 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		4530A88F23F654730093D164 /* View */ = {
@@ -148,6 +165,8 @@
 				45104E9723FA1E200081EF48 /* SearchBookViewController.xib */,
 				45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */,
 				45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */,
+				45104EAB23FE5ECA0081EF48 /* BasicTableViewCell.swift */,
+				45104EAC23FE5ECA0081EF48 /* BasicTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -175,6 +194,7 @@
 		458F2D9123F59ED800BA5036 /* Bookshelf */ = {
 			isa = PBXGroup;
 			children = (
+				45104EA623FE59D10081EF48 /* Extension */,
 				45104E4323F659E30081EF48 /* Model */,
 				45104E4023F657530081EF48 /* Manager */,
 				4530A88F23F654730093D164 /* View */,
@@ -315,6 +335,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45104EAE23FE5ECA0081EF48 /* BasicTableViewCell.xib in Resources */,
 				458F2D9F23F59EDA00BA5036 /* LaunchScreen.storyboard in Resources */,
 				458F2DC323F6330900BA5036 /* MainViewController.xib in Resources */,
 				45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */,
@@ -348,6 +369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45104E4523F65A190081EF48 /* BookModel.swift in Sources */,
+				45104EAA23FE5B1B0081EF48 /* UserDefaults+.swift in Sources */,
 				458F2D9723F59ED800BA5036 /* MainViewController.swift in Sources */,
 				458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */,
 				4530A89223F654920093D164 /* NewBooksViewController.swift in Sources */,
@@ -360,6 +382,8 @@
 				45104E9B23FA4BE10081EF48 /* SearchedBooks.swift in Sources */,
 				45104E4223F6575F0081EF48 /* URLSessionManager.swift in Sources */,
 				45104E5223F6A08C0081EF48 /* BookDetailModel.swift in Sources */,
+				45104EAD23FE5ECA0081EF48 /* BasicTableViewCell.swift in Sources */,
+				45104EA823FE5A490081EF48 /* SearchLogManager.swift in Sources */,
 				45104E4C23F665120081EF48 /* BookAPIManager.swift in Sources */,
 				45104E4F23F6673C0081EF48 /* BookInfoTableViewCell.swift in Sources */,
 			);
