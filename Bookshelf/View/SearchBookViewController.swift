@@ -11,8 +11,23 @@ import UIKit
 class SearchBookViewController: UIViewController {
     @IBOutlet weak var bookTableView: UITableView!
     
-    let searchController = UISearchController(searchResultsController: nil)
+    enum SearchMode {
+        case searched
+        case none
+    }
     
+    let resultViewController: UIViewController!
+    let searchController: UISearchController!
+    
+    private var mode: SearchMode = .none {
+        didSet {
+            if oldValue != self.mode {
+                DispatchQueue.main.async {
+                    self.bookTableView.reloadData()
+                }
+            }
+        }
+    }
     private var lastPage: Int = 0
     private var books: [Book] = []
     private var loadImageTasks: [Int : URLSessionDataTask] = [:]
@@ -21,20 +36,39 @@ class SearchBookViewController: UIViewController {
     private var lastSearchText: String?
     private var loadingEnded: Bool = false
     
+    private let searchLogManager = SearchLogManager()
+    
+    init() {
+        let resultVC = UIViewController()
+        resultVC.view.backgroundColor = .yellow
+        self.resultViewController = resultVC
+        self.searchController = UISearchController(searchResultsController: nil)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         self.definesPresentationContext = true
+        self.extendedLayoutIncludesOpaqueBars = true
         
         self.searchController.searchResultsUpdater = self
-        self.searchController.obscuresBackgroundDuringPresentation = false
-        self.searchController.searchBar.placeholder = "Search Books"
+        self.searchController.obscuresBackgroundDuringPresentation = true
+        self.searchController.searchBar.placeholder = "Title, Author, ISBN13, etc"
         self.searchController.searchBar.delegate = self
+        self.searchController.delegate = self
         
-        self.navigationItem.searchController = searchController
-        self.navigationItem.title = "Books"
-        
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.searchController = self.searchController
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+        self.navigationItem.title = "Search"
+     
+        self.bookTableView.register(UINib(nibName: "BasicTableViewCell", bundle: nil), forCellReuseIdentifier: "BasicTableViewCell")
         self.bookTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
         self.bookTableView.register(UINib(nibName: "LoadingTableViewCell", bundle: nil), forCellReuseIdentifier: "LoadingTableViewCell")
     }
@@ -53,9 +87,15 @@ class SearchBookViewController: UIViewController {
 }
 
 extension SearchBookViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.mode = .none
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.loadingEnded = false
         if let searchText = searchBar.text, !searchText.isEmpty {
+            self.searchLogManager.searched(searchedText: searchText)
+            
             let page = 1
             self.lastSearchText = searchText
             self.lastSearchTask?.cancel()
@@ -72,6 +112,7 @@ extension SearchBookViewController: UISearchBarDelegate {
                 switch result {
                 case .success(let searchedBooks):
                     if page == 1 {
+                        self.mode = .searched
                         self.books.removeAll()
                     }
                     self.lastPage = page
@@ -84,6 +125,8 @@ extension SearchBookViewController: UISearchBarDelegate {
                 }
             }
             self.lastSearchTask = task
+        } else {
+            self.mode = .searched
         }
     }
     
@@ -97,6 +140,7 @@ extension SearchBookViewController: UISearchBarDelegate {
         self.lastPage = 0
         self.lastSearchText = nil
         self.books.removeAll()
+        self.mode = .none
     }
     
     private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
@@ -125,10 +169,18 @@ extension SearchBookViewController: UISearchResultsUpdating {
 
 extension SearchBookViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard self.books.count > indexPath.item else { return }
-        let book = self.books[indexPath.item]
-        let detailVC = BookDetailViewController(book: book)
-        self.navigationController?.pushViewController(detailVC, animated: true)
+        switch mode {
+        case .none:
+            guard searchLogManager.searched.count > indexPath.item else { return }
+            self.searchController.searchBar.text = searchLogManager.searched[indexPath.item]
+            self.searchBarSearchButtonClicked(self.searchController.searchBar)
+            
+        case .searched:
+            guard self.books.count > indexPath.item else { return }
+            let book = self.books[indexPath.item]
+            let detailVC = BookDetailViewController(book: book)
+            self.navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -186,32 +238,51 @@ extension SearchBookViewController: UITableViewDelegate {
 
 extension SearchBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.loadingEnded {
-            return self.books.count
-        } else {
-            return (self.books.count == 0) ? 0 : (self.books.count + 1)
+        switch self.mode {
+        case .none:
+            return self.searchLogManager.searched.count
+        case .searched:
+            if self.loadingEnded {
+                return self.books.count
+            } else {
+                return (self.books.count == 0) ? 0 : (self.books.count + 1)
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if self.books.count > indexPath.item {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
+        switch self.mode {
+        case .none:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BasicTableViewCell", for: indexPath) as? BasicTableViewCell else {
                 return UITableViewCell()
             }
-            
-            let book = self.books[indexPath.item]
-            let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
-            if bookImage == nil, let imageURL = book.image {
-                self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
+            let searchedTexts = searchLogManager.searched
+            guard searchedTexts.count > indexPath.count else {
+                return cell
             }
+            cell.configure(title: searchedTexts[indexPath.item])
+            return cell
             
-            cell.configure(book: book, image: bookImage)
-            return cell
-        } else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "LoadingTableViewCell", for: indexPath) as? LoadingTableViewCell else {
-                return UITableViewCell()
+        case .searched:
+            if self.books.count > indexPath.item {
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
+                    return UITableViewCell()
+                }
+                
+                let book = self.books[indexPath.item]
+                let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
+                if bookImage == nil, let imageURL = book.image {
+                    self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
+                }
+                
+                cell.configure(book: book, image: bookImage)
+                return cell
+            } else {
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: "LoadingTableViewCell", for: indexPath) as? LoadingTableViewCell else {
+                    return UITableViewCell()
+                }
+                return cell
             }
-            return cell
         }
     }
 }
@@ -229,4 +300,15 @@ extension SearchBookViewController: UITableViewDataSourcePrefetching {
             }
         }
     }
+}
+
+extension SearchBookViewController: UISearchControllerDelegate {
+    func willPresentSearchController(_ searchController: UISearchController) {
+        print("*** WILL PRESENT")
+    }
+    
+    func willDismissSearchController(_ searchController: UISearchController) {
+        print("*** WILL DISMISS")
+    }
+    
 }

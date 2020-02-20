@@ -19,6 +19,9 @@ class NewBooksViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.title = "New books"
+        
         self.bookListTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
         BookAPIManager.loadNewBookLists { [weak self] (result) in
             guard let self = self else { return }
