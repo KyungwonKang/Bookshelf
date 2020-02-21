@@ -10,6 +10,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SearchResultViewController" customModule="Bookshelf" customModuleProvider="target">
             <connections>
                 <outlet property="bookTableView" destination="urx-Fq-AkL" id="GMd-6N-MNd"/>
+                <outlet property="noResultGuideView" destination="8JJ-YL-dFO" id="ir5-at-zGE"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -20,19 +21,38 @@
             <subviews>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" bouncesZoom="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="urx-Fq-AkL">
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="wHH-pv-e8D"/>
                         <outlet property="delegate" destination="-1" id="Uhp-Hs-qSy"/>
                         <outlet property="prefetchDataSource" destination="-1" id="Wgk-q0-yMl"/>
                     </connections>
                 </tableView>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-YL-dFO">
+                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Results" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d80-kb-ePa">
+                            <rect key="frame" x="158" y="396.5" width="98.5" height="25.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                            <color key="textColor" systemColor="quaternaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.17999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstItem="d80-kb-ePa" firstAttribute="centerX" secondItem="8JJ-YL-dFO" secondAttribute="centerX" id="dvU-SZ-0wg"/>
+                        <constraint firstItem="d80-kb-ePa" firstAttribute="centerY" secondItem="8JJ-YL-dFO" secondAttribute="centerY" id="vfU-zl-Bnk"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="urx-Fq-AkL" secondAttribute="trailing" id="Uwt-wd-fSA"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="8JJ-YL-dFO" secondAttribute="bottom" id="YFB-Cr-wua"/>
                 <constraint firstItem="urx-Fq-AkL" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="bFa-fw-HRC"/>
+                <constraint firstItem="8JJ-YL-dFO" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="egE-uS-11E"/>
                 <constraint firstItem="urx-Fq-AkL" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="g3O-Sz-ASl"/>
+                <constraint firstItem="8JJ-YL-dFO" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="mvu-hm-Oll"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="8JJ-YL-dFO" secondAttribute="trailing" id="stq-UE-0JZ"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="urx-Fq-AkL" secondAttribute="bottom" id="szB-Q7-aMA"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>

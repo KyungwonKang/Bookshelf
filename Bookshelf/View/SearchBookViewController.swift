@@ -77,7 +77,7 @@ extension SearchBookViewController: UISearchBarDelegate {
 
 extension SearchBookViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-//        let searchText = searchController.searchBar.text
+        self.resultViewController.updateSearchResults()
     }
     
     

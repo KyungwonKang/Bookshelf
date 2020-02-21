@@ -15,6 +15,7 @@ protocol BookSelectDelegate: NSObjectProtocol {
 class SearchResultViewController: UIViewController {
 
     @IBOutlet weak var bookTableView: UITableView!
+    @IBOutlet weak var noResultGuideView: UIView!
     
     private var lastPage: Int = 0
     private var books: [Book] = []
@@ -45,11 +46,13 @@ class SearchResultViewController: UIViewController {
     }
     */
 
+    func updateSearchResults() {
+        self.noResultGuideView.isHidden = true
+    }
+        
     func searchBarSearchButtonClicked(searchText: String) {
         self.loadingEnded = false
         
-        
-        let page = 1
         self.lastSearchText = searchText
         self.lastSearchTask?.cancel()
         self.lastSearchTask = nil
@@ -58,6 +61,7 @@ class SearchResultViewController: UIViewController {
         }
         self.loadImageTasks.removeAll()
         
+        let page = 1
         let task = BookAPIManager.searchBooks(searchText: searchText, page: page) { [weak self, page] (result) in
             guard let self = self else { return }
             self.lastSearchTask = nil
@@ -70,8 +74,10 @@ class SearchResultViewController: UIViewController {
                 self.lastPage = page
                 self.books.append(contentsOf: searchedBooks.books)
                 DispatchQueue.main.async {
+                    self.noResultGuideView.isHidden = (self.books.count > 0)
                     self.bookTableView.reloadData()
                 }
+                
             case .failure(let error):
                 print("Search Book error: \(error.localizedDescription)")
             }
@@ -82,14 +88,16 @@ class SearchResultViewController: UIViewController {
     func searchBarCancelButtonClicked() {
         self.lastSearchTask?.cancel()
         self.lastSearchTask = nil
-        self.loadImageTasks.values.forEach { (task) in
-            task.cancel()
-        }
+        
+        self.loadImageTasks.values.forEach { $0.cancel() }
         self.loadImageTasks.removeAll()
+        
         self.lastPage = 0
         self.lastSearchText = nil
+        
         self.books.removeAll()
         self.bookTableView.reloadData()
+        self.noResultGuideView.isHidden = true
     }
     
     private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
