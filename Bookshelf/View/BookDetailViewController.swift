@@ -9,17 +9,15 @@
 import UIKit
 
 class BookDetailViewController: UIViewController {
-    
-    @IBOutlet weak var bookImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var subtitleLabel: UILabel!
-    @IBOutlet weak var publishInfoLabel: UILabel!
-    
-    @IBOutlet weak var ratingsContainerView: UIView!
+
+    @IBOutlet weak var detailTableView: UITableView!
     
     private var lastTask: URLSessionDataTask?
+    private var details: [(String, String)] = []
     
     let book: Book
+    private var detail: BookDetail?
+    
     init(book: Book) {
         self.book = book
         super.init(nibName: "BookDetailViewController", bundle: nil)
@@ -33,37 +31,15 @@ class BookDetailViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.updateUI(book: book)
-        self.loadBookDetailInfo(book: book)
-    }
+        self.navigationItem.largeTitleDisplayMode = .never
+        
+        self.detailTableView.register(UINib(nibName: "BookDetailBasicTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailBasicTableViewCell")
+        self.detailTableView.register(UINib(nibName: "BookDetailInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailInfoTableViewCell")
+        self.detailTableView.contentInsetAdjustmentBehavior = .never
+        self.detailTableView.automaticallyAdjustsScrollIndicatorInsets = false
+        self.detailTableView.sectionHeaderHeight = UITableView.automaticDimension
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        self.bookImageView.image = nil
-        self.bookImageView.subviews.forEach { $0.removeFromSuperview() }
-    }
-    
-    private func updateUI(book: Book) {
-        self.titleLabel.text = book.title
-        self.subtitleLabel.text = book.subtitle
-        if let imageurl = book.image, let url = URL(string: imageurl) {
-            let task = URLSessionManager.getImageData(url: url) { [weak self] (result) in
-                guard let self = self else { return }
-                self.lastTask = nil
-                
-                switch result {
-                case .success(let data):
-                    if let image = UIImage(data: data) {
-                        DispatchQueue.main.async {
-                            self.bookImageView.image = image
-                        }
-                    }
-                case .failure(let error):
-                    print("Get image data error: \(error.localizedDescription)")
-                }
-            }
-            self.lastTask = task
-        }
+        self.loadBookDetailInfo(book: book)
     }
     
     private func loadBookDetailInfo(book: Book) {
@@ -75,7 +51,12 @@ class BookDetailViewController: UIViewController {
             switch result {
             case .success(let detail):
                 DispatchQueue.main.async {
-                    self.updateUI(bookDetail: detail)
+                    self.detail = detail
+                    if let isbn10 = detail.isbn10 { self.details.append(("isbn10", isbn10)) }
+                    if let isbn13 = detail.isbn13 { self.details.append(("isbn13", isbn13)) }
+                    if let pages = detail.pages { self.details.append(("pages", pages)) }
+                    if let year = detail.year { self.details.append(("year", year)) }
+                    self.detailTableView.reloadData()
                 }
             case .failure(let error):
                 print("Load book detail error: \(error.localizedDescription)")
@@ -84,68 +65,66 @@ class BookDetailViewController: UIViewController {
         
         self.lastTask = task
     }
-    
-    private func updateUI(bookDetail: BookDetail) {
-        if let imageurl = bookDetail.image, let url = URL(string: imageurl) {
-            let task = URLSessionManager.getImageData(url: url) { [weak self] (result) in
-                guard let self = self else { return }
-                self.lastTask = nil
-                
-                switch result {
-                case .success(let data):
-                    if let image = UIImage(data: data) {
-                        DispatchQueue.main.async {
-                            self.bookImageView.image = image
-                        }
-                    }
-                case .failure(let error):
-                    print("Get image data error: \(error.localizedDescription)")
-                }
-            }
-            self.lastTask = task
-        }
-        
-        self.titleLabel.text = bookDetail.title
-        self.subtitleLabel.text = bookDetail.subtitle
-        self.publishInfoLabel.text = "\(bookDetail.authors ?? "") / \(bookDetail.publisher ?? "") / \(bookDetail.year ?? "")"
-        if let ratingStr = bookDetail.rating, let rating = Int(ratingStr) {
-            self.addRatingInfos(ratings: rating)
+}
+
+extension BookDetailViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return UITableView.automaticDimension
+        } else {
+            return 30
         }
     }
     
-    private func addRatingInfos(ratings: Int) {
-        self.ratingsContainerView.subviews.forEach { $0.removeFromSuperview() }
-        var leading: CGFloat = 0
-        let imageSize: CGFloat = 25
-        let labelLeadingMargin: CGFloat = 5
-        let maxRating: Int = 5
-        // Add Images
-        for i in 0..<maxRating {
-            let systemImageName = (i < ratings) ? "star.fill" : "star"
-            let starImageView = UIImageView(image: UIImage(systemName: systemImageName))
-            starImageView.contentMode = .scaleAspectFit
-            starImageView.translatesAutoresizingMaskIntoConstraints = false
-            self.ratingsContainerView.addSubview(starImageView)
-            
-            let top = NSLayoutConstraint(item: starImageView, attribute: .top, relatedBy: .equal, toItem: self.ratingsContainerView, attribute: .top, multiplier: 1.0, constant: 0.0)
-            let bottom = NSLayoutConstraint(item: starImageView, attribute: .bottom, relatedBy: .equal, toItem: self.ratingsContainerView, attribute: .bottom, multiplier: 1.0, constant: 0.0)
-            let lead = NSLayoutConstraint(item: starImageView, attribute: .leading, relatedBy: .equal, toItem: self.ratingsContainerView, attribute: .leading, multiplier: 1.0, constant: leading)
-            let width = NSLayoutConstraint(item: starImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: imageSize)
- 
-            NSLayoutConstraint.activate([top, bottom, lead, width])
-            leading += imageSize
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 1 {
+            return "Information"
+        } else {
+            return nil
         }
-        
-        // Add Label
-        leading += labelLeadingMargin
-        let ratingLabel = UILabel()
-        self.ratingsContainerView.addSubview(ratingLabel)
-        ratingLabel.text = "\(ratings)"
-        ratingLabel.font = UIFont.systemFont(ofSize: 15.0, weight: .semibold)
-        ratingLabel.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? CGFloat.leastNonzeroMagnitude : UITableView.automaticDimension
+    }
+}
 
-        let lead = NSLayoutConstraint(item: ratingLabel, attribute: .leading, relatedBy: .equal, toItem: self.ratingsContainerView, attribute: .leading, multiplier: 1.0, constant: leading)
-        let centerY = NSLayoutConstraint(item: ratingLabel, attribute: .centerY, relatedBy: .equal, toItem: self.ratingsContainerView, attribute: .centerY, multiplier: 1.0, constant: 0.0)
-        NSLayoutConstraint.activate([lead, centerY])
+extension BookDetailViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        } else {
+            return details.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookDetailInfoTableViewCell", for: indexPath) as? BookDetailInfoTableViewCell else {
+                return UITableViewCell()
+            }
+            if let detail = self.detail {
+                cell.configure(bookDetail: detail)
+            } else {
+                cell.configure(book: book)
+            }
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookDetailBasicTableViewCell", for: indexPath) as? BookDetailBasicTableViewCell else {
+                return UITableViewCell()
+            }
+            
+            guard details.count > indexPath.item else {
+                return cell
+            }
+            
+            let detail = details[indexPath.item]
+            cell.configure(title: detail.0, value: detail.1)
+            return cell
+        }
     }
 }

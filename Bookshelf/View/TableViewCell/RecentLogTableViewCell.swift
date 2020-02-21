@@ -1,5 +1,5 @@
 //
-//  BasicTableViewCell.swift
+//  RecentLogTableViewCell.swift
 //  Bookshelf
 //
 //  Created by Kyungwon Kang on 2020/02/20.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BasicTableViewCell: UITableViewCell {
+class RecentLogTableViewCell: UITableViewCell {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var seperatorHeightConstraint: NSLayoutConstraint!

@@ -51,7 +51,7 @@ class SearchBookViewController: UIViewController {
 
         self.bookTableView.contentInsetAdjustmentBehavior = .never
         self.bookTableView.automaticallyAdjustsScrollIndicatorInsets = false
-        self.bookTableView.register(UINib(nibName: "BasicTableViewCell", bundle: nil), forCellReuseIdentifier: "BasicTableViewCell")
+        self.bookTableView.register(UINib(nibName: "RecentLogTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentLogTableViewCell")
         self.bookTableView.register(UINib(nibName: "RecentHeaderTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentHeaderTableViewCell")
     }
 }
@@ -103,6 +103,12 @@ extension SearchBookViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            
+        }
+    }
 }
 
 extension SearchBookViewController: UITableViewDataSource {
@@ -119,7 +125,7 @@ extension SearchBookViewController: UITableViewDataSource {
             cell.delegate = self
             return cell
         } else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "BasicTableViewCell", for: indexPath) as? BasicTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "RecentLogTableViewCell", for: indexPath) as? RecentLogTableViewCell else {
                 return UITableViewCell()
             }
             
