@@ -13,7 +13,7 @@ class SearchBookViewController: UIViewController {
     
     private let resultViewController: SearchResultViewController!
     private let searchController: UISearchController!
-    private let searchLogManager = SearchLogManager()
+    private let searchLogManager = SearchLogger()
     
     init() {
         let resultVC = SearchResultViewController()
@@ -38,21 +38,20 @@ class SearchBookViewController: UIViewController {
         self.definesPresentationContext = true
         self.extendedLayoutIncludesOpaqueBars = true
         
-        self.searchController.searchResultsUpdater = self
-        self.searchController.obscuresBackgroundDuringPresentation = true
-        self.searchController.searchBar.placeholder = "Title, Author, ISBN13, etc"
-        self.searchController.searchBar.delegate = self
-        self.searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = true
+        searchController.searchBar.placeholder = "Title, Author, ISBN13, etc"
+        searchController.searchBar.delegate = self
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.searchController = self.searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
         self.navigationItem.title = "Search"
 
-        self.bookTableView.contentInsetAdjustmentBehavior = .never
-        self.bookTableView.automaticallyAdjustsScrollIndicatorInsets = false
-        self.bookTableView.register(UINib(nibName: "RecentLogTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentLogTableViewCell")
-        self.bookTableView.register(UINib(nibName: "RecentHeaderTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentHeaderTableViewCell")
+        bookTableView.contentInsetAdjustmentBehavior = .never
+        bookTableView.automaticallyAdjustsScrollIndicatorInsets = false
+        bookTableView.register(UINib(nibName: "RecentLogTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentLogTableViewCell")
+        bookTableView.register(UINib(nibName: "RecentHeaderTableViewCell", bundle: nil), forCellReuseIdentifier: "RecentHeaderTableViewCell")
     }
 }
 
@@ -63,58 +62,53 @@ extension SearchBookViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text, !searchText.isEmpty {
-            self.resultViewController.searchBarSearchButtonClicked(searchText: searchText)
-            self.searchLogManager.searched(searchedText: searchText)
-            self.bookTableView.reloadData()
+            resultViewController.requestSearch(searchText: searchText)
+            searchLogManager.add(log: searchText)
+            bookTableView.reloadData()
         }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.resultViewController.searchBarCancelButtonClicked()
+        resultViewController.clear()
     }
-    
 }
 
 extension SearchBookViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        self.resultViewController.updateSearchResults()
+        resultViewController.updateSearchResults()
     }
-    
-    
 }
 
 extension SearchBookViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.item - 1
-        let texts = searchLogManager.getSearchedTexts()
+        let texts = searchLogManager.getLogs()
         
         if texts.count > index {
             let searchText = texts[index]
             
-            self.searchController.searchBar.text = searchText
-            self.searchLogManager.searched(searchedText: searchText)
+            searchController.searchBar.text = searchText
+            searchLogManager.add(log: searchText)
             
-            self.searchController.isActive = true
-            self.searchBarSearchButtonClicked(self.searchController.searchBar)
-            self.bookTableView.reloadData()
+            searchController.isActive = true
+            searchBarSearchButtonClicked(self.searchController.searchBar)
+            bookTableView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            
-        }
-    }
 }
 
 extension SearchBookViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let count = self.searchLogManager.getSearchedTexts().count
-        return (count == 0) ? 0 : count + 1
+        let logs = searchLogManager.getLogs()
+        if logs.isEmpty {
+            return 0
+        } else {
+            return logs.count + 1
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -130,28 +124,17 @@ extension SearchBookViewController: UITableViewDataSource {
             }
             
             let index = indexPath.item - 1
-            let searchedTexts = self.searchLogManager.getSearchedTexts()
-            guard searchedTexts.count > index else {
+            let logs = self.searchLogManager.getLogs()
+            guard logs.count > index else {
                 return cell
             }
-            cell.configure(title: searchedTexts[index])
+            cell.configure(title: logs[index])
             return cell
         }
     }
 }
 
-extension SearchBookViewController: UISearchControllerDelegate {
-    func willPresentSearchController(_ searchController: UISearchController) {
-        print("*** WILL PRESENT")
-    }
-    
-    func willDismissSearchController(_ searchController: UISearchController) {
-        print("*** WILL DISMISS")
-    }
-    
-}
-
-extension SearchBookViewController: BookSelectDelegate {
+extension SearchBookViewController: BookDidClickDelegate {
     func bookSelected(book: Book) {
         let detailVC = BookDetailViewController(book: book)
         self.navigationController?.pushViewController(detailVC, animated: true)
@@ -160,7 +143,7 @@ extension SearchBookViewController: BookSelectDelegate {
 
 extension SearchBookViewController: RecentClearDelegate {
     func clearButtonClicked() {
-        self.searchLogManager.removeAll()
-        self.bookTableView.reloadData()
+        searchLogManager.removeAll()
+        bookTableView.reloadData()
     }
 }

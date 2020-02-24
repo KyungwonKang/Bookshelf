@@ -1,5 +1,5 @@
 //
-//  BookAPIManager.swift
+//  BookAPI.swift
 //  Bookshelf
 //
 //  Created by Kyungwon Kang on 2020/02/14.
@@ -8,9 +8,9 @@
 
 import Foundation
 
-let IT_BOOK_API_URL = "https://api.itbook.store/1.0/"
+private let IT_BOOK_API_URL = "https://api.itbook.store/1.0/"
 
-class BookAPIManager {
+class BookAPI {
     @discardableResult
     static func loadNewBookLists(completion: @escaping (Result<NewReleasedBooks, APIError>) -> Void) -> URLSessionDataTask? {
         guard let url = URL(string: IT_BOOK_API_URL + "new") else {

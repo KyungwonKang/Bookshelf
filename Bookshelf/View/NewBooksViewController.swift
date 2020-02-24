@@ -13,7 +13,7 @@ class NewBooksViewController: UIViewController {
     @IBOutlet weak var bookListTableView: UITableView!
     
     private var books: [Book] = []
-    private var loadImageTasks: [Int : URLSessionDataTask] = [:]
+    private var imageTasks: [String : URLSessionDataTask] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,52 +22,58 @@ class NewBooksViewController: UIViewController {
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "New books"
         
-        self.bookListTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
-        BookAPIManager.loadNewBookLists { [weak self] (result) in
+        bookListTableView.register(UINib(nibName: "BookInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookInfoTableViewCell")
+        
+        loadNewBooks { [weak self] (books) in
             guard let self = self else { return }
+            self.setupNewBooksAndReload(books: books)
+        }
+    }
+
+    private func loadNewBooks(success: @escaping ([Book]) -> Void) {
+        BookAPI.loadNewBookLists { (result) in
             switch result {
             case .success(let newBooks):
-                DispatchQueue.main.async {
-                    self.books = newBooks.books
-                    self.bookListTableView.reloadData()
-                }
+                success(newBooks.books)
             case .failure(let error):
                 print("Load new book lists error: \(error.localizedDescription)")
             }
         }
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func setupNewBooksAndReload(books: [Book]) {
+        self.books = books
+        DispatchQueue.main.async {
+            self.bookListTableView.reloadData()
+        }
     }
-    */
 
-    private func setImageToCell(imageURL: String, cellIndexPath indexPath: IndexPath) {
-        guard BookCacheManager.shared.images.object(forKey: imageURL as NSString) == nil else { return }
-        guard self.loadImageTasks[indexPath.item] == nil else { return }
-        let task = BookCacheManager.shared.getImageFromURL(urlString: imageURL) { [weak self, indexPath] (image) in
+    private func requestImage(forBook book: Book, cellIndexPath indexPath: IndexPath) {
+        guard let id = book.isbn13, let imagePath = book.image, BookImageManager.shared.getCache(forURL: imagePath) == nil else {
+            return
+        }
+        
+        guard imageTasks[id] == nil else {
+            return
+        }
+        
+        
+        self.imageTasks[id] = BookImageManager.shared.loadImage(fromURL: imagePath) { [weak self, id] (image) in
             guard let self = self else { return }
+            self.imageTasks[id] = nil
             DispatchQueue.main.async {
-                self.loadImageTasks[indexPath.item] = nil
-                if let cell = self.bookListTableView.cellForRow(at: indexPath) as? BookInfoTableViewCell {
-                    cell.configure(image: image)
+                if let cell = self.bookListTableView.cellForRow(at: indexPath) as? BookInfoTableViewCell, cell.isbn13 == id {
+                    cell.update(image: image)
                 }
             }
         }
-        self.loadImageTasks[indexPath.item] = task
     }
 }
 
 extension NewBooksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard self.books.count > indexPath.item else { return }
-        let book = self.books[indexPath.item]
+        guard books.count > indexPath.item else { return }
+        let book = books[indexPath.item]
         let detailVC = BookDetailViewController(book: book)
         self.navigationController?.pushViewController(detailVC, animated: true)
     }
@@ -79,25 +85,24 @@ extension NewBooksViewController: UITableViewDelegate {
 
 extension NewBooksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.books.count
+        return books.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookInfoTableViewCell", for: indexPath) as? BookInfoTableViewCell else {
             return UITableViewCell()
         }
-        guard self.books.count > indexPath.item else {
+        guard books.count > indexPath.item else {
             return cell
         }
         
-        let book = self.books[indexPath.item]
-        
-        let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
-        if bookImage == nil, let imageURL = book.image {
-            self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
+        let book = books[indexPath.item]
+        if let cache = BookImageManager.shared.getCache(forURL: book.image ?? "") {
+            cell.configure(book: book, image: cache)
+        } else {
+            requestImage(forBook: book, cellIndexPath: indexPath)
+            cell.configure(book: book, image: nil)
         }
-        
-        cell.configure(book: book, image: bookImage)
         return cell
     }
 }
@@ -105,14 +110,12 @@ extension NewBooksViewController: UITableViewDataSource {
 extension NewBooksViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
-            if self.books.count <= indexPath.item {
+            if books.count <= indexPath.item {
                 continue
             }
             
-            let book = self.books[indexPath.item]
-            if let imageURL = book.image {
-                self.setImageToCell(imageURL: imageURL, cellIndexPath: indexPath)
-            }
+            let book = books[indexPath.item]
+            requestImage(forBook: book, cellIndexPath: indexPath)
         }
     }
 }

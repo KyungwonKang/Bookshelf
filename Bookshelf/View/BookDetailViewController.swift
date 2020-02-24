@@ -12,8 +12,7 @@ class BookDetailViewController: UIViewController {
 
     @IBOutlet weak var detailTableView: UITableView!
     
-    private var lastTask: URLSessionDataTask?
-    private var details: [(String, String)] = []
+    private var bookInfos: [(String, String)] = []
     
     let book: Book
     private var detail: BookDetail?
@@ -33,37 +32,46 @@ class BookDetailViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.navigationItem.largeTitleDisplayMode = .never
         
-        self.detailTableView.register(UINib(nibName: "BookDetailBasicTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailBasicTableViewCell")
-        self.detailTableView.register(UINib(nibName: "BookDetailInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailInfoTableViewCell")
-        self.detailTableView.contentInsetAdjustmentBehavior = .never
-        self.detailTableView.automaticallyAdjustsScrollIndicatorInsets = false
-        self.detailTableView.sectionHeaderHeight = UITableView.automaticDimension
+        detailTableView.register(UINib(nibName: "BookDetailBasicTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailBasicTableViewCell")
+        detailTableView.register(UINib(nibName: "BookDetailInfoTableViewCell", bundle: nil), forCellReuseIdentifier: "BookDetailInfoTableViewCell")
+        detailTableView.contentInsetAdjustmentBehavior = .never
+        detailTableView.automaticallyAdjustsScrollIndicatorInsets = false
+        detailTableView.sectionHeaderHeight = UITableView.automaticDimension
 
-        self.loadBookDetailInfo(book: book)
+        self.loadBookDetailInfo(book: book, success: { [weak self] detail in
+            self?.apply(detail: detail)
+        })
     }
     
-    private func loadBookDetailInfo(book: Book) {
+    private func loadBookDetailInfo(book: Book, success: @escaping (BookDetail) -> Void) {
         guard let isbn13 = book.isbn13 else { return }
-        let task = BookAPIManager.loadBookInfo(isbn13: isbn13, completion: { [weak self] (result) in
-            guard let self = self else { return }
-            self.lastTask = nil
-            
+        BookAPI.loadBookInfo(isbn13: isbn13, completion: { (result) in
             switch result {
             case .success(let detail):
-                DispatchQueue.main.async {
-                    self.detail = detail
-                    if let isbn10 = detail.isbn10 { self.details.append(("isbn10", isbn10)) }
-                    if let isbn13 = detail.isbn13 { self.details.append(("isbn13", isbn13)) }
-                    if let pages = detail.pages { self.details.append(("pages", pages)) }
-                    if let year = detail.year { self.details.append(("year", year)) }
-                    self.detailTableView.reloadData()
-                }
+                success(detail)
             case .failure(let error):
                 print("Load book detail error: \(error.localizedDescription)")
             }
         })
-        
-        self.lastTask = task
+    }
+    
+    private func apply(detail: BookDetail) {
+        self.detail = detail
+        if let isbn10 = detail.isbn10 {
+            self.bookInfos.append(("isbn10", isbn10))
+        }
+        if let isbn13 = detail.isbn13 {
+            self.bookInfos.append(("isbn13", isbn13))
+        }
+        if let pages = detail.pages {
+            self.bookInfos.append(("Pages", pages))
+        }
+        if let year = detail.year {
+            self.bookInfos.append(("Year", year))
+        }
+        DispatchQueue.main.async {
+            self.detailTableView.reloadData()
+        }
     }
 }
 
@@ -98,7 +106,7 @@ extension BookDetailViewController: UITableViewDataSource {
         if section == 0 {
             return 1
         } else {
-            return details.count
+            return bookInfos.count
         }
     }
     
@@ -107,23 +115,24 @@ extension BookDetailViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookDetailInfoTableViewCell", for: indexPath) as? BookDetailInfoTableViewCell else {
                 return UITableViewCell()
             }
+            
+            cell.setBaseInfo(book)
             if let detail = self.detail {
-                cell.configure(bookDetail: detail)
-            } else {
-                cell.configure(book: book)
+                cell.setDetailInfo(detail)
             }
+            
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookDetailBasicTableViewCell", for: indexPath) as? BookDetailBasicTableViewCell else {
                 return UITableViewCell()
             }
             
-            guard details.count > indexPath.item else {
+            guard bookInfos.count > indexPath.item else {
                 return cell
             }
             
-            let detail = details[indexPath.item]
-            cell.configure(title: detail.0, value: detail.1)
+            let info = bookInfos[indexPath.item]
+            cell.configure(title: info.0, value: info.1)
             return cell
         }
     }

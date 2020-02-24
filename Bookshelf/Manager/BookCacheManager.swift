@@ -1,5 +1,5 @@
 //
-//  BookCacheManager.swift
+//  BookImageManager.swift
 //  Bookshelf
 //
 //  Created by Kyungwon Kang on 2020/02/17.
@@ -8,11 +8,15 @@
 
 import UIKit
 
-class BookCacheManager {
-    static let shared = BookCacheManager()
-    private (set) var images = NSCache<NSString, UIImage>()
+class BookImageManager {
+    static let shared = BookImageManager()
+    private var images = NSCache<NSString, UIImage>()
+
+    func getCache(forURL urlString: String) -> UIImage? {
+        return images.object(forKey: urlString as NSString)
+    }
     
-    func getImageFromURL(urlString: String, completion: @escaping (UIImage) -> Void) -> URLSessionDataTask? {
+    func loadImage(fromURL urlString: String, completion: @escaping (UIImage) -> Void) -> URLSessionDataTask? {
         guard let url = URL(string: urlString) else {
             return nil
         }
@@ -22,7 +26,7 @@ class BookCacheManager {
             return nil
         }
         
-        let task = URLSessionManager.getImageData(url: url) { [weak self, urlString] (result) in
+        return URLSessionManager.get(url: url) { [weak self, urlString] (result) in
             guard let self = self else { return }
             switch result {
             case .success(let data):
@@ -34,7 +38,6 @@ class BookCacheManager {
                 break
             }
         }
-        return task
     }
 
 }

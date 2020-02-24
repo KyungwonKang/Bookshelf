@@ -23,7 +23,7 @@
 		45104E9D23FA93A80081EF48 /* BookCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104E9C23FA93A80081EF48 /* BookCacheManager.swift */; };
 		45104EA223FD08390081EF48 /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */; };
 		45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */; };
-		45104EA823FE5A490081EF48 /* SearchLogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA723FE5A490081EF48 /* SearchLogManager.swift */; };
+		45104EA823FE5A490081EF48 /* SearchLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA723FE5A490081EF48 /* SearchLogger.swift */; };
 		45104EAA23FE5B1B0081EF48 /* UserDefaults+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */; };
 		45104EAD23FE5ECA0081EF48 /* RecentLogTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EAB23FE5ECA0081EF48 /* RecentLogTableViewCell.swift */; };
 		45104EAE23FE5ECA0081EF48 /* RecentLogTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EAC23FE5ECA0081EF48 /* RecentLogTableViewCell.xib */; };
@@ -81,7 +81,7 @@
 		45104E9C23FA93A80081EF48 /* BookCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCacheManager.swift; sourceTree = "<group>"; };
 		45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
 		45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingTableViewCell.xib; sourceTree = "<group>"; };
-		45104EA723FE5A490081EF48 /* SearchLogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLogManager.swift; sourceTree = "<group>"; };
+		45104EA723FE5A490081EF48 /* SearchLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLogger.swift; sourceTree = "<group>"; };
 		45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+.swift"; sourceTree = "<group>"; };
 		45104EAB23FE5ECA0081EF48 /* RecentLogTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentLogTableViewCell.swift; sourceTree = "<group>"; };
 		45104EAC23FE5ECA0081EF48 /* RecentLogTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecentLogTableViewCell.xib; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 				45104E4123F6575F0081EF48 /* URLSessionManager.swift */,
 				45104E4B23F665120081EF48 /* BookAPIManager.swift */,
 				45104E9C23FA93A80081EF48 /* BookCacheManager.swift */,
-				45104EA723FE5A490081EF48 /* SearchLogManager.swift */,
+				45104EA723FE5A490081EF48 /* SearchLogger.swift */,
 				45104ECF240429490081EF48 /* UserDefaultCache.swift */,
 			);
 			path = Manager;
@@ -425,7 +425,7 @@
 				45104E5223F6A08C0081EF48 /* BookDetailModel.swift in Sources */,
 				45104EAD23FE5ECA0081EF48 /* RecentLogTableViewCell.swift in Sources */,
 				45104EB923FEC5770081EF48 /* RecentHeaderTableViewCell.swift in Sources */,
-				45104EA823FE5A490081EF48 /* SearchLogManager.swift in Sources */,
+				45104EA823FE5A490081EF48 /* SearchLogger.swift in Sources */,
 				45104E4C23F665120081EF48 /* BookAPIManager.swift in Sources */,
 				45104EB123FEAA850081EF48 /* SearchResultViewController.swift in Sources */,
 				45104EBD23FF91750081EF48 /* BookDetailBasicTableViewCell.swift in Sources */,

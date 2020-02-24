@@ -16,9 +16,12 @@ class BookInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var isbnLabel: UILabel!
     @IBOutlet weak var urlLabel: UILabel!
     
+    private (set) var isbn13: String?
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        self.isbn13 = nil
         self.bookImageView.image = nil
         self.titleLabel.text = nil
         self.subtitleLabel.text = nil
@@ -44,6 +47,7 @@ class BookInfoTableViewCell: UITableViewCell {
     }
     
     func configure(book: Book, image: UIImage?) {
+        self.isbn13 = book.isbn13
         self.titleLabel.text = book.title
         self.subtitleLabel.text = book.subtitle
         self.priceLabel.text = book.price
@@ -52,7 +56,7 @@ class BookInfoTableViewCell: UITableViewCell {
         self.bookImageView.image = image
     }
     
-    func configure(image: UIImage?) {
+    func update(image: UIImage?) {
         self.bookImageView.image = image
     }
 }

@@ -19,7 +19,7 @@ class BookDetailInfoTableViewCell: UITableViewCell {
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var linkTextView: UITextView!
     
-    private var lastTask: URLSessionDataTask?
+    private var imageTask: URLSessionDataTask?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,8 +32,8 @@ class BookDetailInfoTableViewCell: UITableViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.lastTask?.cancel()
-        self.lastTask = nil
+        self.imageTask?.cancel()
+        self.imageTask = nil
     }
     
     
@@ -43,48 +43,37 @@ class BookDetailInfoTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configure(book: Book) {
+    func setBaseInfo(_ book: Book) {
         self.titleLabel.text = book.title
         self.subtitleLabel.text = book.subtitle
         self.priceLabel.text = book.price
         self.linkTextView.text = book.url
         
-        let bookImage = BookCacheManager.shared.images.object(forKey: (book.image ?? "") as NSString)
-        self.bookImageView.image = bookImage
+        let cache = BookImageManager.shared.getCache(forURL: book.image ?? "")
+        self.bookImageView.image = cache
     }
     
-    func configure(bookDetail: BookDetail) {
-        self.titleLabel.text = bookDetail.title
-        self.subtitleLabel.text = bookDetail.subtitle
-        self.publishInfoLabel.text = "\(bookDetail.authors ?? "") / \(bookDetail.publisher ?? "") / \(bookDetail.year ?? "")"
-        self.descriptionLabel.text = bookDetail.desc
-        self.priceLabel.text = bookDetail.price
-        self.linkTextView.text = bookDetail.url
+    func setDetailInfo(_ detail: BookDetail) {
+        self.publishInfoLabel.text = "\(detail.authors ?? "") / \(detail.publisher ?? "") / \(detail.year ?? "")"
+        self.descriptionLabel.text = detail.desc
         
-        if let ratingStr = bookDetail.rating, let rating = Int(ratingStr) {
+        if let ratingStr = detail.rating, let rating = Int(ratingStr) {
             self.addRatingInfos(ratings: rating)
         }
-        if let imagePath = bookDetail.image {
-            if let bookImage = BookCacheManager.shared.images.object(forKey: imagePath as NSString) {
-                self.bookImageView.image = bookImage
-            } else if let url = URL(string: imagePath) {
-                let task = URLSessionManager.getImageData(url: url) { [weak self] (result) in
+        
+        if let imagePath = detail.image {
+            if let cache = BookImageManager.shared.getCache(forURL: imagePath) {
+                self.bookImageView.image = cache
+            } else {
+                self.imageTask = BookImageManager.shared.loadImage(fromURL: imagePath, completion: { [weak self] (image) in
                     guard let self = self else { return }
-                    self.lastTask = nil
-
-                    switch result {
-                    case .success(let data):
-                        if let image = UIImage(data: data) {
-                            DispatchQueue.main.async {
-                                self.bookImageView.image = image
-                            }
-                        }
-                    case .failure(let error):
-                        print("Get image data error: \(error.localizedDescription)")
+                    self.imageTask = nil
+                    DispatchQueue.main.async {
+                        self.bookImageView.image = image
                     }
-                }
-                self.lastTask = task
+                })
             }
+            
         }
     }
     
