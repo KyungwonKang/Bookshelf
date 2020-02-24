@@ -24,7 +24,6 @@
 		45104EA223FD08390081EF48 /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */; };
 		45104EA323FD08390081EF48 /* LoadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */; };
 		45104EA823FE5A490081EF48 /* SearchLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA723FE5A490081EF48 /* SearchLogger.swift */; };
-		45104EAA23FE5B1B0081EF48 /* UserDefaults+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */; };
 		45104EAD23FE5ECA0081EF48 /* RecentLogTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EAB23FE5ECA0081EF48 /* RecentLogTableViewCell.swift */; };
 		45104EAE23FE5ECA0081EF48 /* RecentLogTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45104EAC23FE5ECA0081EF48 /* RecentLogTableViewCell.xib */; };
 		45104EB123FEAA850081EF48 /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45104EAF23FEAA850081EF48 /* SearchResultViewController.swift */; };
@@ -82,7 +81,6 @@
 		45104EA023FD08390081EF48 /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
 		45104EA123FD08390081EF48 /* LoadingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingTableViewCell.xib; sourceTree = "<group>"; };
 		45104EA723FE5A490081EF48 /* SearchLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLogger.swift; sourceTree = "<group>"; };
-		45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+.swift"; sourceTree = "<group>"; };
 		45104EAB23FE5ECA0081EF48 /* RecentLogTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentLogTableViewCell.swift; sourceTree = "<group>"; };
 		45104EAC23FE5ECA0081EF48 /* RecentLogTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecentLogTableViewCell.xib; sourceTree = "<group>"; };
 		45104EAF23FEAA850081EF48 /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
@@ -161,14 +159,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		45104EA623FE59D10081EF48 /* Extension */ = {
-			isa = PBXGroup;
-			children = (
-				45104EA923FE5B1A0081EF48 /* UserDefaults+.swift */,
-			);
-			path = Extension;
-			sourceTree = "<group>";
-		};
 		45104ECB23FFDDCA0081EF48 /* TableViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -229,7 +219,6 @@
 		458F2D9123F59ED800BA5036 /* Bookshelf */ = {
 			isa = PBXGroup;
 			children = (
-				45104EA623FE59D10081EF48 /* Extension */,
 				45104E4323F659E30081EF48 /* Model */,
 				45104E4023F657530081EF48 /* Manager */,
 				4530A88F23F654730093D164 /* View */,
@@ -408,7 +397,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				45104E4523F65A190081EF48 /* BookModel.swift in Sources */,
-				45104EAA23FE5B1B0081EF48 /* UserDefaults+.swift in Sources */,
 				458F2D9723F59ED800BA5036 /* MainViewController.swift in Sources */,
 				45104ED0240429490081EF48 /* UserDefaultCache.swift in Sources */,
 				458F2D9323F59ED800BA5036 /* AppDelegate.swift in Sources */,
